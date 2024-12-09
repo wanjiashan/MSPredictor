@@ -26,29 +26,13 @@ We design a model with linear time ${\cal O}\left( n \right)$ complexity, which 
 
 ## 2. Training Procedure
 ### (1) Datasets
-![landslide](imgs/table1.png)
-We evaluate the performance of TFPredictor on six major
-traffic flow prediction benchmark datasets: METR-LA, PEMS-BAY, PEMS03, PEMS04, PEMS07, and PEMS08. The time
-interval for each dataset is 5 minutes, resulting in 12 time
-frames per hour. These datasets are widely used in traffic
-prediction research and cover various traffic conditions and
-challenges. For more information about these datasets, please
-refer to Table I.
-
-
-<b>PEMS04</b>: A benchmark in spatiotemporal data mining & traffic forecasting. [Data Source](link)
-
-<b>METR-LA</b>:Traffic data from 207 sensors in Los Angeles highways. [Data Source](https://github.com/laekov/Traffic-Data).
-
-<b>PEMS-BAY</b>: Traffic data from 325 sensors across the Bay Area, California. [Data Source](link).
-
-
-### (2) Network Parameter Tuning
-To evaluate the performance of MSPredictor in long-range time series forecasting, we conducted experiments on seven benchmark datasets: ETTm1, ETTm2, Electricity, Exchange-Rate, Traffic, Weather, Solar-Energy. For short-range time series forecasting, we selected the PEMS datasets and the Influenza-like Illness (ILI) dataset.
-
 <div align="center">
   <img src="imgs/table1.png" alt="Example Image" width="500" />
 </div>
+To evaluate the performance of MSPredictor in long-range time series forecasting, we conducted experiments on seven benchmark datasets: ETTm1, ETTm2, Electricity, Exchange-Rate, Traffic, Weather, Solar-Energy. For short-range time series forecasting, we selected the PEMS datasets and the Influenza-like Illness (ILI) dataset.
+
+
+
 
 ## 3.Experimental Results
 <div align="center">
@@ -57,22 +41,40 @@ To evaluate the performance of MSPredictor in long-range time series forecasting
 <div align="center">
   <img src="imgs/4.png" alt="Example Image" width="500" />
 </div>
-```
+To demonstrate the predictive capability of multi-scale
+sequences, we not only performed a visual comparison of
+our model’s predictions with those of other models but also
+conducted a qualitative comparison of results across scales.
+Fig. 11(a) displays the prediction results of MSPredictor,
+accurately reflecting future trends and cyclical dynamics across
+multiple scales. The depicted peaks and troughs in the figure
+align closely with the actual data. In contrast, Fig. 11(b)
+to 11(e) show the prediction results of other models, which
+exhibit significant performance declines during specific time
+periods. This decline is likely due to architectural limitations in
+recognizing multi-scale patterns, sudden changes, and complex
+intra- and inter-series correlations, causing them to be unable
+to accurately follow these variations.
+Further, Fig. 11(f) to 11(j) detail the predictive performance
+at fixed scales. Specifically, the fine-scale predictions—shown
+in Fig. 11(f) to 11(h)—highlight detailed variations in the
+time series and precisely capture seasonal patterns. In contrast, the coarse-scale predictions—shown in Fig. 11(i) to
+11(j)—emphasize the understanding of macro trends, demonstrating a broader grasp of trend dynamics at larger scales.
+This comparison not only proves the superiority of our model
+in multi-scale prediction but also emphasizes the importance
+of multi-scale analysis in understanding complex time series
+data.
+
 ## 4. Conclusion
-  This study successfully developed a multi-scale dynamic
-graph neural network model called MSPredictor, designed
-to optimize MTS prediction. By innovatively designing an
-EGSL, this model constructs multi-scale dynamic graph adjacency matrices, effectively capturing dynamic inter-variable
-correlations across scales. Additionally, we introduced an
-MFM, which integrates data from various scales, significantly
+  This study successfully developed a multi-scale dynamic graph neural network model called MSPredictor, designed to optimize MTS prediction. By innovatively designing an EGSL, this model constructs multi-scale dynamic graph adjacency matrices, effectively capturing dynamic inter-variable correlations across scales. Additionally, we introduced an MFM, which integrates data from various scales, significantly
 enhancing the stability and accuracy of predictions.
-Extensive experiments demonstrated that our model outperforms existing benchmark models across multiple realworld datasets, consistently outperforming existing benchmark
+Extensive experiments demonstrated that our model outperforms existing benchmark models across multiple realworld datasets, consistently outperforming existing benchmark
 models. To enhance the model’s interpretability, we introduced
 an explanatory strategy called ClarityLens, which visualizes
 adjacency matrices and prediction outcomes at different time
-scales, thereby showcasing the model’s internal reasoning process. This strategy not only increases the transparency of the
+scales, thereby showcasing the model’s internal reasoning process. This strategy not only increases the transparency of the
 model but also offers a new perspective on the interpretability
-of time series predictions. Despite the MSPredictor’s impressive performance in many respects, it has limitations, such as
+of time series predictions. Despite the MSPredictor’s impressive performance in many respects, it has limitations, such as
 potentially overemphasizing the relationships between nodes
 while neglecting the holistic modeling of data changes over
 time. Future research will explore the use of SSMs, treating

@@ -17,10 +17,8 @@ Challenge 3: Lack of explainability in prediction results. Although GNNs can pro
 
 To address the challenges in MTS prediction, We propose MSPredictor, a multi-scale dynamic graph neural network, designed to reveal the dynamics and complex temporal patterns in MTS data. Initially, we use Fast Fourier Transform (FFT) to decompose the original time series into key scales. Subsequently, through a dynamic graph structure learner in an end-to-end framework, we automatically identify specific scale graph structures and deeply analyze the complex dependencies between variables at different scales. We also introduce multi-scale temporal graphs to accurately model the correlations between variables in each period and design a multi-scale fusion module that integrates information across scales through the Kolmogorov-Arnold Networks (KANs). To enhance the explainability of model predictions, we developed an explanatory strategy called ClarityLens.
 <div align="center">
-  <img src="imgs/2-3.png" alt="Example Image" width="500" />
+  <img src="imgs/2.png" alt="Example Image" width="500" />
 </div>
-
-
 
 Loss trend comparison between TFPredictor and other benchmark models at different epoch counts
 provides a detailed comparison of loss trends with increasing epochs under different architectures. From the analysis, it is evident that the Mamba model has significant advantages over Transformer-based models. To quantify the performance advantages of the ScaKAN component in the model further, we present the loss trends for MLP and ScaKAN in our model in Fig.ScaKAN outperforms MLP, with the 4-layer KAN structure performing the best. Its loss decreases rapidly to the minimum level after relatively few epochs and remains stable. This indicates that ScaKAN not only provides more accurate prediction results but also maintains consistency under different traffic conditions, which is crucial for real-world traffic prediction scenarios.
@@ -64,6 +62,23 @@ We train benchmark models such as <a href="https://github.com/LincanLi98/STG-Mam
 </div>
 ```
 ## 4. Conclusion
-  In this paper, we explored the multi-scale Selective State Space Model, TFPredictor, in detail and evaluated its effectiveness in handling spatiotemporal data, particularly in critical traffic flow prediction tasks, where the model can effectively model and predict sequence data. By introducing KFGNN, TFPredictor achieves dynamic evolution of the spatiotemporal graph adjacency matrix, which is closely integrated with the SSSM process of the entire graph. Additionally, we introduced the Graph-Mamba block, a module designed based on the SSSM to optimize graph data processing. Using the ScaKAN architecture for the multi-scale fusion module, TFPredictor ensures effective cross-scale correlation capture, improving the accuracy and robustness of multi-scale representations. Compared to attention-based methods, TFPredictor significantly reduces inference time while maintaining linear time complexity.
-Extensive empirical studies conducted on multiple traffic datasets demonstrate that TFPredictor outperforms other benchmark methods in both prediction performance and computational efficiency. Furthermore, we performed an in-depth interpretability analysis on the PEMS-BAY and METR-LA datasets, showcasing the interpretative capability of the TFPredictor model.
-Future research will delve deeper into the interpretability of the ScaKAN component in the TFPredictor model, focusing on identifying the impact of traffic patterns at different time scales on traffic flow. Advances in this area are expected to enhance the accuracy and reliability of traffic flow prediction models significantly, promoting more precise traffic management and planning applications.
+  This study successfully developed a multi-scale dynamic
+graph neural network model called MSPredictor, designed
+to optimize MTS prediction. By innovatively designing an
+EGSL, this model constructs multi-scale dynamic graph adjacency matrices, effectively capturing dynamic inter-variable
+correlations across scales. Additionally, we introduced an
+MFM, which integrates data from various scales, significantly
+enhancing the stability and accuracy of predictions.
+Extensive experiments demonstrated that our model outperforms existing benchmark models across multiple realworld datasets, consistently outperforming existing benchmark
+models. To enhance the model’s interpretability, we introduced
+an explanatory strategy called ClarityLens, which visualizes
+adjacency matrices and prediction outcomes at different time
+scales, thereby showcasing the model’s internal reasoning process. This strategy not only increases the transparency of the
+model but also offers a new perspective on the interpretability
+of time series predictions. Despite the MSPredictor’s impressive performance in many respects, it has limitations, such as
+potentially overemphasizing the relationships between nodes
+while neglecting the holistic modeling of data changes over
+time. Future research will explore the use of SSMs, treating
+spatiotemporal dynamic graphs as an integrated system to
+delve deeper into the dynamics of states over time, aiming
+to overcome these limitations.

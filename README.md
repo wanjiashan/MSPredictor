@@ -10,6 +10,9 @@ Index Terms—Multivariate Time Series, Graph Neural Networks, Multi-Scale Analy
 <div align="center">
   <img src="imgs/1.png" alt="Example Image" width="500" />
 </div>
+<div align="center">
+  <img src="imgs/2.png" alt="Example Image" width="500" />
+</div>
 
 Challenge 1: Incompleteness in multi-scale modeling. Existing models often use a fixed time resolution, which limits their ability to capture dependencies at different time scales (As shown in the upper part of Fig.2). For example, in traffic data analysis, traffic flows during different periods (such as all-day, half-day, and rush hours) exhibit multi-periodic features, highlighting the limitations of a single time resolution in capturing these varied periodic patterns.
 Challenge 2: Limitations of the static graph structure assumption (As shown in the top-left part of Fig.2). This assumption restricts the model's ability to capture dynamically changing temporal patterns . Traditional GNNs often overlook the interactions between nodes that occur due to temporal changes, making static graph structures poorly suited for adapting to and explaining dynamic temporal variations. This may result in GNNs failing to capture and respond to critical time series changes effectively.
@@ -17,7 +20,7 @@ Challenge 3: Lack of explainability in prediction results. Although GNNs can pro
 
 To address the challenges in MTS prediction, We propose MSPredictor, a multi-scale dynamic graph neural network, designed to reveal the dynamics and complex temporal patterns in MTS data. Initially, we use Fast Fourier Transform (FFT) to decompose the original time series into key scales. Subsequently, through a dynamic graph structure learner in an end-to-end framework, we automatically identify specific scale graph structures and deeply analyze the complex dependencies between variables at different scales. We also introduce multi-scale temporal graphs to accurately model the correlations between variables in each period and design a multi-scale fusion module that integrates information across scales through the Kolmogorov-Arnold Networks (KANs). To enhance the explainability of model predictions, we developed an explanatory strategy called ClarityLens.
 <div align="center">
-  <img src="imgs/2.png" alt="Example Image" width="500" />
+  <img src="imgs/3.png" alt="Example Image" width="500" />
 </div>
 
 Loss trend comparison between TFPredictor and other benchmark models at different epoch counts
@@ -27,7 +30,7 @@ We design a model with linear time ${\cal O}\left( n \right)$ complexity, which 
 ## 2. Training Procedure
 ### (1) Datasets
 <div align="center">
-  <img src="imgs/table1.png" alt="Example Image" width="500" />
+  <img src="imgs/table4.png" alt="Example Image" width="500" />
 </div>
 To evaluate the performance of MSPredictor in long-range time series forecasting, we conducted experiments on seven benchmark datasets: ETTm1, ETTm2, Electricity, Exchange-Rate, Traffic, Weather, Solar-Energy. For short-range time series forecasting, we selected the PEMS datasets and the Influenza-like Illness (ILI) dataset.
 

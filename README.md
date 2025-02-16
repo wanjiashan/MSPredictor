@@ -30,7 +30,7 @@ We design a model with linear time ${\cal O}\left( n \right)$ complexity, which 
 ## 2. Training Procedure
 ### (1) Datasets
 <div align="center">
-  <img src="imgs/table4.png" alt="Example Image" width="500" />
+  <img src="imgs/4.png" alt="Example Image" width="500" />
 </div>
 To evaluate the performance of MSPredictor in long-range time series forecasting, we conducted experiments on seven benchmark datasets: ETTm1, ETTm2, Electricity, Exchange-Rate, Traffic, Weather, Solar-Energy. For short-range time series forecasting, we selected the PEMS datasets and the Influenza-like Illness (ILI) dataset.
 
@@ -39,11 +39,9 @@ To evaluate the performance of MSPredictor in long-range time series forecasting
 
 ## 3.Experimental Results
 <div align="center">
-  <img src="imgs/3.png" alt="Example Image" width="500" />
+  <img src="imgs/5.png" alt="Example Image" width="500" />
 </div>
-<div align="center">
-  <img src="imgs/4.png" alt="Example Image" width="500" />
-</div>
+
 To demonstrate the predictive capability of multi-scale
 sequences, we not only performed a visual comparison of
 our model’s predictions with those of other models but also

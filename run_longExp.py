@@ -103,7 +103,7 @@ parser.add_argument('--gpu', type=int, default=0, help='gpu')
 parser.add_argument('--use_multi_gpu',action='store_true',default=False,help='Enable distributed training across multiple GPUs')
 
 parser.add_argument('--devices',type=str,default='0,1,2,3',help='Comma-separated GPU device IDs (e.g., "0,1" for first two GPUs)')
-parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')
+parser.add_argument('--test_flop',action='store_true',default=False,help='Calculate model FLOPs (floating point operations)')
 
 args = parser.parse_args()
 args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False

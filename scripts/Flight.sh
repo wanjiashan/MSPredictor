@@ -10,7 +10,7 @@ export CUDA_VISIBLE_DEVICES=2
 
 seq_len=96
 label_len=48
-model_name=MSGNet
+model_name=MSPredictor
 
 for pred_len in 96 192 336 720
 do

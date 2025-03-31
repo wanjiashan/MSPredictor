@@ -10,7 +10,7 @@ export CUDA_VISIBLE_DEVICES=0
 
 seq_len=36
 label_len=18
-model_name=MSGNet
+model_name=MSPredictor
 
 pred_len=24
 python -u run_longExp.py \

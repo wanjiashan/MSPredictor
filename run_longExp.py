@@ -40,7 +40,7 @@ parser.add_argument('--checkpoints', type=str, default='./checkpoints/',
 parser.add_argument('--seq_len',type=int,default=96,help='Input sequence length (time steps) for the model')
 parser.add_argument('--label_len', type=int, default=48,help='Length of decoder start token sequence')
 parser.add_argument('--pred_len', type=int,default=96,help='Prediction horizon length (time steps)')
-parser.add_argument('--seasonal_patterns', type=str, default='Monthly', help='subset for M4')
+parser.add_argument('--seasonal_patterns', type=str, default='Monthly', help='subset for weather or Solar-Energy')
 
 
 parser.add_argument('--top_k',type=int,default=5,help='Number of top scales/frequencies to select in TimesBlock')
@@ -96,7 +96,7 @@ parser.add_argument('--learning_rate',type=float,default=0.0001,help='Initial le
 parser.add_argument('--des',type=str,default='test',help='Experiment description tag for identification')
 parser.add_argument('--loss',type=str,default='MSE',choices=['MSE', 'MAE', 'Huber', 'SmoothL1'],help='Loss function for training. Options: MSE, MAE, Huber, SmoothL1')
 parser.add_argument('--lradj',type=str,default='type1',choices=['type1', 'type2', 'type3', 'cosine', 'step'],help='Learning rate adjustment strategy. Options: type1, type2, type3, cosine, step')
-parser.add_argument('--use_amp',action='store_true',default=False,help='Enable Automatic Mixed Precision (AMP) training')
+parser.add_argument('--use_amp',action='store_true',default=False,help='Multi-scale Fusion Prediction')
 # GPU
 parser.add_argument('--use_gpu', type=bool, default=True, help='use gpu')
 parser.add_argument('--gpu', type=int, default=0, help='gpu')

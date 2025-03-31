@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.fft
 from layers.Embed import DataEmbedding
-from layers.MSGBlock import GraphBlock, Attention_Block
+from layers.MSModule import GraphBlock, Attention_Block
 from layers.KAN import KANLinear
 
 

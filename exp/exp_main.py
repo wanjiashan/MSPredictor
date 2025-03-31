@@ -1,15 +1,13 @@
 from data_provider.data_factory import data_provider
 from .exp_basic import Exp_Basic
 from models import MSPredictor, KAN
-from utils.tools import EarlyStopping, adjust_learning_rate, visual, test_params_flop
+from utils.tools import EarlyStopping, adjust_learning_rate
 from utils.metrics import metric
 import torch
 import torch.nn as nn
-from torch import optim, autograd
+from torch import optim
 import os
-import time
 import warnings
-import matplotlib.pyplot as plt
 import numpy as np
 
 warnings.filterwarnings('ignore')
@@ -21,7 +19,7 @@ class Exp_Main(Exp_Basic):
 
     def _build_model(self):
         model_dict = {
-            'MSGNet': MSPredictor,
+            'MSPredictor': MSPredictor,
             'KAN': KAN
         }
         model = model_dict[self.args.model].Model(self.args).float()

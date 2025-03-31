@@ -1,6 +1,7 @@
 from data_provider.data_factory import data_provider
 from .exp_basic import Exp_Basic
-from models import MSPredictor, KAN
+from models import MSPredictor
+from layers import KAN
 from utils.tools import EarlyStopping, adjust_learning_rate
 from utils.metrics import metric
 import torch

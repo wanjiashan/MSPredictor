@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import torch.fft
 from layers.Embed import DataEmbedding
 from layers.MSGBlock import GraphBlock, Attention_Block
-from models.KAN import KANLinear
+from layers.KAN import KANLinear
 
 
 def FFT_for_Period(x, k=2):

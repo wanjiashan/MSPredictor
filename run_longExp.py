@@ -1,7 +1,5 @@
 import argparse
-import os
 import time
-from multiprocessing import freeze_support
 import torch
 from exp.exp_main import Exp_Main
 import random
@@ -12,18 +10,19 @@ random.seed(fix_seed)
 torch.manual_seed(fix_seed)
 np.random.seed(fix_seed)
 
-parser = argparse.ArgumentParser(description='MSGNet for Time Series Forecasting')
+parser = argparse.ArgumentParser(description='MSPredictor for Time Series Forecasting')
 
 # basic config
-parser.add_argument('--task_name', type=str, required=False, default='long_term_forecast',
+parser.add_argument('--task_name', type=str, required=False, default='longitudinal forecast analysis',
                     help='task name, options:[long_term_forecast, mask, short_term_forecast, imputation, classification, anomaly_detection]')
 parser.add_argument('--is_training', type=int, required=True, default=1, help='status')
 parser.add_argument('--model_id', type=str, required=True, default='test', help='model id')
-parser.add_argument('--model', type=str, required=True, default='Autoformer',
-                    help='model name, options: [Autoformer, Informer, Transformer]')
+parser.add_argument('--model', type=str, required=True, default='MSPredictor',
+                    help='model name, options: [MSPredictor]')
 
 # data loader
-parser.add_argument('--data', type=str, required=True, default='ETTm1', help='dataset type')
+parser.add_argument('--data',type=str,required=True,default='ETTm1',
+                    help='Supported datasets: ETTm1, ETTh1, Electricity, Traffic, Weather')
 parser.add_argument('--root_path', type=str, default='./data/ETT/', help='root path of the data file')
 parser.add_argument('--data_path', type=str, default='ETTh1.csv', help='data file')
 parser.add_argument('--features', type=str, default='M',
@@ -34,24 +33,25 @@ parser.add_argument('--freq', type=str, default='h',
                     help='freq for time features encoding, '
                          'options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], '
                          'you can also use more detailed freq like 15min or 3h')
-parser.add_argument('--checkpoints', type=str, default='./checkpoints/', help='location of model checkpoints')
+parser.add_argument('--checkpoints', type=str, default='./checkpoints/',
+                    help='Directory path to save/load model checkpoints. Supports relative absolute paths.')
 
 # forecasting task
-parser.add_argument('--seq_len', type=int, default=96, help='input sequence length')
-parser.add_argument('--label_len', type=int, default=48, help='start token length')
-parser.add_argument('--pred_len', type=int, default=96, help='prediction sequence length')
+parser.add_argument('--seq_len',type=int,default=96,help='Input sequence length (time steps) for the model')
+parser.add_argument('--label_len', type=int, default=48,help='Length of decoder start token sequence')
+parser.add_argument('--pred_len', type=int,default=96,help='Prediction horizon length (time steps)')
 parser.add_argument('--seasonal_patterns', type=str, default='Monthly', help='subset for M4')
 
 
-parser.add_argument('--top_k', type=int, default=5, help='for TimesBlock/ScaleGraphBlock')
-parser.add_argument('--num_kernels', type=int, default=6, help='for Inception')
+parser.add_argument('--top_k',type=int,default=5,help='Number of top scales/frequencies to select in TimesBlock')
+parser.add_argument('--num_kernels', type=int,default=6,help='Number of parallel convolution kernels in Inception block')
 
-parser.add_argument('--num_nodes', type=int, default=7, help='to create Graph')
-parser.add_argument('--subgraph_size', type=int, default=3, help='neighbors number')
-parser.add_argument('--tanhalpha', type=float, default=3, help='')
+parser.add_argument('--num_nodes',type=int,default=7,help='Number of nodes in the constructed graph')
+parser.add_argument('--subgraph_size',type=int,default=3,help='Number of nearest neighbors for local subgraph construction')
+parser.add_argument('--tanhalpha', type=float, default=3)
 
 #GCN
-parser.add_argument('--node_dim', type=int, default=10, help='each node embbed to dim dimentions')
+parser.add_argument('--node_dim',type=int,default=10,help='Dimensionality of node embeddings')
 parser.add_argument('--gcn_depth', type=int, default=2, help='')
 parser.add_argument('--gcn_dropout', type=float, default=0.3, help='')
 parser.add_argument('--propalpha', type=float, default=0.3, help='')
@@ -60,50 +60,49 @@ parser.add_argument('--skip_channel', type=int, default=32, help='')
 
 
 # DLinear
-parser.add_argument('--individual', action='store_true', default=False, help='DLinear: a linear layer for each variate(channel) individually')
+parser.add_argument('--individual',action='store_true',default=False,help='Use separate linear layers for each channel (DLinear mode)')
 # Formers
-parser.add_argument('--embed_type', type=int, default=0, help='0: default '
-                                                              '1: value embedding + temporal embedding + positional embedding '
-                                                              '2: value embedding + temporal embedding '
-                                                              '3: value embedding + positional embedding '
-                                                              '4: value embedding')
-parser.add_argument('--enc_in', type=int, default=7, help='encoder input size')
-parser.add_argument('--dec_in', type=int, default=7, help='decoder input size')
+parser.add_argument('--embed_type',type=int,default=0,choices=[0, 1, 2, 3, 4],help='''Embedding configuration:
+                                                                   0: Default
+                                                                   1: Value + Temporal + Positional
+                                                                   2: Value + Temporal
+                                                                   3: Value + Positional
+                                                                   4: Value only''')
+parser.add_argument('--enc_in', type=int, default=7, help='encoder size')
+parser.add_argument('--dec_in', type=int, default=7, help='decoder size')
 parser.add_argument('--c_out', type=int, default=7, help='output size')
-parser.add_argument('--d_model', type=int, default=512, help='dimension of model')
-parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
-parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
-parser.add_argument('--d_layers', type=int, default=1, help='num of decoder layers')
-parser.add_argument('--d_ff', type=int, default=2048, help='dimension of fcn')
-parser.add_argument('--moving_avg', type=int, default=25, help='window size of moving average')
-parser.add_argument('--factor', type=int, default=1, help='attn factor')
-parser.add_argument('--distil', action='store_false',
-                    help='whether to use distilling in encoder, using this argument means not using distilling',
-                    default=True)
-parser.add_argument('--dropout', type=float, default=0.05, help='dropout')
-parser.add_argument('--embed', type=str, default='timeF',
-                    help='time features encoding, options:[timeF, fixed, learned]')
+parser.add_argument('--d_model',type=int,default=512,help='Hidden dimension size of the model')
+parser.add_argument('--n_heads',type=int,default=8,help='Number of attention heads in multi-head attention')
+parser.add_argument('--e_layers',type=int,default=2,help='Number of encoder layers in the model')
+parser.add_argument('--d_layers', type=int, default=1, help='Number of decoder layers in the model')
+parser.add_argument('--d_ff',type=int,default=2048,help='Hidden dimension of position-wise feed-forward network')
+parser.add_argument('--moving_avg',type=int,default=25,help='Window size for moving average smoothing')
+parser.add_argument('--factor',type=int,default=1,help='Attention scaling factor')
+parser.add_argument('--no_distil',action='store_false',dest='distil',default=True,help='Disable distillation in encoder')
+parser.add_argument('--dropout',type=float,default=0.05,help='Dropout probability for all layers')
+parser.add_argument('--embed',type=str,default='timeF',choices=['timeF', 'fixed', 'learned'],
+                    help='Time features encoding method. Options: timeF, fixed, learned')
 parser.add_argument('--activation', type=str, default='gelu', help='activation')
-parser.add_argument('--output_attention', action='store_true', help='whether to output attention in encoder')
-parser.add_argument('--do_predict', action='store_true', help='whether to predict unseen future data')
+parser.add_argument('--output_attention',action='store_true',help='Whether to return encoder attention weights')
+parser.add_argument('--do_predict',action='store_true',help='Enable forecasting on unseen future data')
 
 # optimization
-parser.add_argument('--num_workers', type=int, default=8, help='data loader num workers')
-parser.add_argument('--itr', type=int, default=2, help='experiments times')
-parser.add_argument('--train_epochs', type=int, default=10, help='train epochs')
-parser.add_argument('--batch_size', type=int, default=32, help='batch size of train input data')
-parser.add_argument('--patience', type=int, default=3, help='early stopping patience')
-parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
-parser.add_argument('--des', type=str, default='test', help='exp description')
-parser.add_argument('--loss', type=str, default='MSE', help='loss function')
-parser.add_argument('--lradj', type=str, default='type1', help='adjust learning rate')
-parser.add_argument('--use_amp', action='store_true', help='use automatic mixed precision training', default=False)
-
+parser.add_argument('--num_workers',type=int,default=8,help='Number of subprocesses for data loading')
+parser.add_argument('--itr',type=int,default=2,help='Number of independent experimental runs')
+parser.add_argument('--train_epochs', type=int,default=10,help='Number of complete training passes through the dataset')
+parser.add_argument('--batch_size',type=int,default=32,help='Number of samples per training batch')
+parser.add_argument('--patience',type=int,default=3,help='Number of epochs to wait before early stopping')
+parser.add_argument('--learning_rate',type=float,default=0.0001,help='Initial learning rate for the optimizer')
+parser.add_argument('--des',type=str,default='test',help='Experiment description tag for identification')
+parser.add_argument('--loss',type=str,default='MSE',choices=['MSE', 'MAE', 'Huber', 'SmoothL1'],help='Loss function for training. Options: MSE, MAE, Huber, SmoothL1')
+parser.add_argument('--lradj',type=str,default='type1',choices=['type1', 'type2', 'type3', 'cosine', 'step'],help='Learning rate adjustment strategy. Options: type1, type2, type3, cosine, step')
+parser.add_argument('--use_amp',action='store_true',default=False,help='Enable Automatic Mixed Precision (AMP) training')
 # GPU
 parser.add_argument('--use_gpu', type=bool, default=True, help='use gpu')
 parser.add_argument('--gpu', type=int, default=0, help='gpu')
-parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=False)
-parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids of multile gpus')
+parser.add_argument('--use_multi_gpu',action='store_true',default=False,help='Enable distributed training across multiple GPUs')
+
+parser.add_argument('--devices',type=str,default='0,1,2,3',help='Comma-separated GPU device IDs (e.g., "0,1" for first two GPUs)')
 parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')
 
 args = parser.parse_args()
@@ -143,15 +142,12 @@ if args.is_training:
             args.des, ii)
 
         exp = Exp(args)  # set experiments
-        print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
+        print('*******************start training : {}**************************>'.format(setting))
         exp.train(setting)
 
-        print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
+        print('*******************testing : {}*******************************'.format(setting))
         exp.test(setting)
 
-        # if args.do_predict:
-        #     print('>>>>>>>predicting : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
-        #     exp.predict(setting, True)
 
         torch.cuda.empty_cache()
     end = time.time()
@@ -182,6 +178,6 @@ else:
                                                                                                   args.des, ii)
 
     exp = Exp(args)  # set experiments
-    print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
+    print('**********************testing : {}********************'.format(setting))
     exp.test(setting, test=1)
     torch.cuda.empty_cache()
